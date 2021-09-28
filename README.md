@@ -2,7 +2,7 @@
 maps the output of massprf into a file that can be used in Chimera to color proteins
 execute 
 
-    source(mapMASSPRF_To_Chimera.R) 
+    source("mapMASSPRF_To_Chimera.R") 
 
 from R, which creates the genMASSPRF_Chimera command in your local enviornment.
 
