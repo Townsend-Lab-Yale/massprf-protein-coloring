@@ -1,5 +1,20 @@
 # massprf-protein-coloring
 maps the output of massprf into a file that can be used in Chimera to color proteins
+execute 
+
+    source(mapMASSPRF_To_Chimera.R) 
+
+from R, which creates the genMASSPRF_Chimera command in your local enviornment.
+
+## dependencies
+  require("bio3d")
+  
+  require("Biostrings")
+  
+  require("muscle")
+  
+The coloring happens in Chimera, so you'll need that program too.
+
 
 ## example calls
 genMASSPRF_Chimera(pdbFile = "SARS-CoV-1_ORF7a_Gene.pdb",MASSPRF_Nuc_Fasta = "orf7a_gene.fasta",MASSPRF_Table = "orf7a_MASS_PRF.tsv",scaling=1)
