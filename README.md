@@ -17,10 +17,10 @@ The coloring happens in Chimera, so you'll need that program too.
 
 
 ## example calls
-genMASSPRF_Chimera(pdbFile = "SARS-CoV-1_ORF7a_Gene.pdb",MASSPRF_Nuc_Fasta = "orf7a_gene.fasta",MASSPRF_Table = "orf7a_MASS_PRF.tsv",scaling=1)
+    genMASSPRF_Chimera(pdbFile = "SARS-CoV-1_ORF7a_Gene.pdb",MASSPRF_Nuc_Fasta = "orf7a_gene.fasta",MASSPRF_Table = "orf7a_MASS_PRF.tsv",scaling=1)
 
 
-genMASSPRF_Chimera(pdbFile = "S_23.pdb",MASSPRF_Nuc_Fasta = "s_gene.fasta",onlySig=F,MASSPRF_Table = "S1_MASSPRF.tsv",scaling=6,outfile = "S_cc.txt")
+    genMASSPRF_Chimera(pdbFile = "S_23.pdb",MASSPRF_Nuc_Fasta = "s_gene.fasta",onlySig=F,MASSPRF_Table = "S1_MASSPRF.tsv",scaling=6,outfile = "S_cc.txt")
 
 
 ## Inputs
