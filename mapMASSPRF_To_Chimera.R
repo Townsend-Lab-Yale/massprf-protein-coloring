@@ -1,5 +1,5 @@
 #example call
-genMASSPRF_Chimera(pdbFile = "~/../Downloads/SARS-CoV-1_ORF7a_Gene.pdb",MASSPRF_Nuc_Fasta = "~/../Downloads/orf7a_gene.fasta",MASSPRF_Table = "~/../Downloads/orf7a_MASS_PRF.tsv",scaling=1,sigSetting = "average")
+#genMASSPRF_Chimera(pdbFile = "~/../Downloads/SARS-CoV-1_ORF7a_Gene.pdb",MASSPRF_Nuc_Fasta = "~/../Downloads/orf7a_gene.fasta",MASSPRF_Table = "~/../Downloads/orf7a_MASS_PRF.tsv",scaling=1,sigSetting = "average")
 #genMASSPRF_Chimera(pdbFile = "~/../Desktop/S_23.pdb",MASSPRF_Nuc_Fasta = "~/../Desktop/s_gene.fasta",onlySig=F,MASSPRF_Table = "~/../Downloads/S1_MASSPRF.tsv",scaling=6,outfile = "S_cc.txt")
 
 #pdbFile: The protein structure you are trying to map onto, in pdb format
@@ -15,7 +15,7 @@ genMASSPRF_Chimera(pdbFile = "~/../Downloads/SARS-CoV-1_ORF7a_Gene.pdb",MASSPRF_
 #ehColor: what do you want to color 'eh' residues (missing data, nonsignificant) as a vector size three of rgb
 
 
-genMASSPRF_Chimera<-function(pdbFile,MASSPRF_Nuc_Fasta,MASSPRF_Table,outfile="chimeraColoring.txt",scaling=0, sigSetting="average",onlySig=T,rgb1=c(250,30,30),rgb2=c(30,30,250),bins=100,ehColor=c(128,128,128)){
+genMASSPRF_Chimera<-function(pdbFile,MASSPRF_Nuc_Fasta,MASSPRF_Table,outfile="chimeraColoring.txt",scaling=0, sigSetting="average",onlySig=T,rgb1=c(250,30,30),rgb2=c(30,30,250),bins=100,ehColor=c(128,128,128),midColor=NULL){
   require("bio3d")
   require("Biostrings")
   require("muscle")
@@ -37,6 +37,8 @@ genMASSPRF_Chimera<-function(pdbFile,MASSPRF_Nuc_Fasta,MASSPRF_Table,outfile="ch
   
   redHex<-rgb(rgb1[1],rgb1[2],rgb1[3],maxColorValue = 255)
   blueHex<-rgb(rgb2[1],rgb2[2],rgb2[3],maxColorValue = 255)
+  midHex<-NULL
+  if(!is.null(midColor)){midHex<-rgb(midColor[1],midColor[2],midColor[3],maxColorValue = 255)}
   numberOfColors<-bins
   ehHex<-rgb(ehColor[1],ehColor[2],ehColor[1],maxColorValue = 255)
   
@@ -60,6 +62,7 @@ genMASSPRF_Chimera<-function(pdbFile,MASSPRF_Nuc_Fasta,MASSPRF_Table,outfile="ch
             include.lowest = TRUE)
   ## Use bin indices, ii, to select color from vector of n-1 equally spaced colors
   myColors <- colorRampPalette(c(blueHex,redHex))((numberOfColors-1))[ii]
+  if(!is.null(midHex)){myColors<-colorRampPalette(c(blueHex,midHex,redHex))((numberOfColors-1))[ii]}
   tmpMASS[,"color"]<-myColors
   Raw<-data.frame(matrix(nrow=nchar(origUnaligned),ncol=6))
   colnames(Raw)<-c("AA","Gamma","LCI","UCI","color","Significant")
@@ -164,15 +167,11 @@ genMASSPRF_Chimera<-function(pdbFile,MASSPRF_Nuc_Fasta,MASSPRF_Table,outfile="ch
   holdAllCommands<-""
   for(i in 1:nrow(fStruct)){
     myHex<-fStruct$color[i]
-    myPOS<-(i-1) #convert to python indexing
+    #myPOS<-(i-1) #convert to python indexing
+    myPOS<-(i) #convert to python indexing
     tmp<-setmyColor(myHex,paste0("Custom",(myPOS)),myPOS)
     holdAllCommands<-c(holdAllCommands,tmp)
   }
   holdAllCommands<-holdAllCommands[nchar(holdAllCommands)>1]
   writeLines(holdAllCommands,con=outfile)
-  
-  
 }
-
-
-
