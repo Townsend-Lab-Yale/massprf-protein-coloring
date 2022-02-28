@@ -16,7 +16,7 @@
 #ehColor: what do you want to color 'eh' residues (missing data, nonsignificant) as a vector size three of rgb
 
 
-genMASSPRF_Chimera<-function(pdbFile,MASSPRF_Nuc_Fasta,MASSPRF_Table,outfile="chimeraColoring.txt",scaling=0, sigSetting="average",onlySig=T,rgb1=c(250,30,30),rgb2=c(30,30,250),bins=100,ehColor=c(128,128,128),midColor=NULL){
+genMASSPRF_Chimera<-function(pdbFile,MASSPRF_Nuc_Fasta,MASSPRF_Table,outfile="chimeraColoring.txt",scaling=0, sigSetting="average",onlySig=T,rgb1=c(250,30,30),rgb2=c(30,30,250),bins=10,ehColor=c(128,128,128),midColor=NULL){
   require("bio3d")
   require("Biostrings")
   require("muscle")
