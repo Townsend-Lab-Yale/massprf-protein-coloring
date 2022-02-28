@@ -49,6 +49,8 @@ onlySig: T or F do you want to only color significant sites. Defaults T
 
 rgb1 and rgb2: vectors of size 3, corresponding to a rgb value for coloring the selection intensity. Defaults red and blue
 
+midColor: vector of size 3, optional, corresponding to an rgb value. A midpoint color for a gradient between rgb1 and 2. Defaults none (i.e. 2 color gradient)
+
 
 bins: how many equally spaced apart color categories you want to use for your data. Defaults 100
 
