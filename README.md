@@ -52,7 +52,7 @@ rgb1 and rgb2: vectors of size 3, corresponding to a rgb value for coloring the 
 midColor: vector of size 3, optional, corresponding to an rgb value. A midpoint color for a gradient between rgb1 and 2. Defaults none (i.e. 2 color gradient)
 
 
-bins: how many equally spaced apart color categories you want to use for your data. Defaults 100
+bins: how many equally spaced apart color categories you want to use for your data. Defaults 10
 
 
 ehColor: what do you want to color 'eh' residues (missing data, nonsignificant) as a vector size three of rgb. Defaults grey
