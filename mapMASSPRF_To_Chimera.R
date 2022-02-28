@@ -11,6 +11,7 @@
 #sigSetting: what are you using to determine significance? only affects scale factor 1; otherwise sitewise significance is used
 #onlySig: T or F do you want to only color significant sites
 #rgb1 and rgb2: vectors of size 3, corresponding to a rgb value for coloring the selection intensity
+#midColor: vector of size 3, optional, corresponding to an rgb value. A midpoint color for a gradient between rgb1 and 2.
 #bins: how many equally spaced apart color categories you want to use for your data 
 #ehColor: what do you want to color 'eh' residues (missing data, nonsignificant) as a vector size three of rgb
 
