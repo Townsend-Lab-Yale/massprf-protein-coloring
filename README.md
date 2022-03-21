@@ -70,5 +70,5 @@ ehColor: what do you want to color 'eh' residues (missing data, nonsignificant) 
 
 
 ## To Use
-run "read <outfile>;" on the Chimera command line 
+run "read \<outfile\>;" on the Chimera command line 
 
