@@ -17,10 +17,11 @@ The coloring happens in Chimera, so you'll need that program too.
 
 
 ## example calls
-    batchMASSPRF_Chimera(designFile = "~/../Desktop/S-design.tsv",hasHeader = T,onlySig = F,bins=10,midColor = c(240,245,240),logT = F)
+    #do one gene (S gene)
+    batchMASSPRF_Chimera(designFile = "example_inputs/S-design.tsv",hasHeader = T,onlySig = F,bins=10,midColor = c(240,245,240),logT = F)
 
-
-    batchMASSPRF_Chimera(designFile = "2-design.tsv",hasHeader = T,onlySig = F,bins=15,midColor = c(240,245,240),logT = 2)
+    #do multiple genes jointly
+    batchMASSPRF_Chimera(designFile = "example_inputs/batch-design.tsv",hasHeader = T,onlySig = F,bins=15,midColor = c(240,245,240),logT = 2)
 
 
 ## Inputs
