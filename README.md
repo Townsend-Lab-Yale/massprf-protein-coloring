@@ -42,7 +42,6 @@ designFile: a tsv file with each of the following columns (column names ignored)
     outfile: where the resultant commands for Chimera to color will be stored. Defaults chimeraColoring.txt
 
 
-(hint: execute the following on the Chimera command line): read <outfile>; 
     
     
 
@@ -68,3 +67,8 @@ bins: how many equally spaced apart color categories you want to use for your da
 
 
 ehColor: what do you want to color 'eh' residues (missing data, nonsignificant) as a vector size three of rgb. Defaults grey
+
+
+## To Use
+run "read <outfile>;" on the Chimera command line 
+
