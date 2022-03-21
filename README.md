@@ -2,9 +2,9 @@
 maps the output of massprf into a file that can be used in Chimera to color proteins
 execute 
 
-    source("mapMASSPRF_To_Chimera.R") 
+    source("batchMASSPRF_To_Chimera.R") 
 
-from R, which creates the genMASSPRF_Chimera command in your local enviornment.
+from R, which creates the batchMASSPRF_Chimera command in your local enviornment.
 
 ## dependencies
   require("bio3d")
@@ -17,29 +17,39 @@ The coloring happens in Chimera, so you'll need that program too.
 
 
 ## example calls
-    genMASSPRF_Chimera(pdbFile = "SARS-CoV-1_ORF7a_Gene.pdb",MASSPRF_Nuc_Fasta = "orf7a_gene.fasta",MASSPRF_Table = "orf7a_MASS_PRF.tsv",scaling=1)
+    batchMASSPRF_Chimera(designFile = "~/../Desktop/S-design.tsv",hasHeader = T,onlySig = F,bins=10,midColor = c(240,245,240),logT = F)
 
 
-    genMASSPRF_Chimera(pdbFile = "S_23.pdb",MASSPRF_Nuc_Fasta = "s_gene.fasta",onlySig=F,MASSPRF_Table = "S1_MASSPRF.tsv",scaling=6,outfile = "S_cc.txt")
+    batchMASSPRF_Chimera(designFile = "2-design.tsv",hasHeader = T,onlySig = F,bins=15,midColor = c(240,245,240),logT = 2)
 
 
 ## Inputs
-pdbFile: The protein structure you are trying to map onto, in pdb format. REQUIRED INPUT
+designFile: a tsv file with each of the following columns (column names ignored)
+
+    pdbFile: The protein structure you are trying to map onto, in pdb format. REQUIRED INPUT
 
 
-MASSPRF_Nuc_Fasta: the nucleotide sequence representing your MASSPRF input, in open reading frame and in fasta format. REQUIRED INPUT
+    MASSPRF_Nuc_Fasta: the nucleotide sequence representing your MASSPRF input, in open reading frame and in fasta format. REQUIRED INPUT
 
 
-MASSPRF_Table: The output table from MASSPRF containing the gamma values and CI. REQUIRED INPUT
+    MASSPRF_Table: The output table from MASSPRF containing the gamma values and CI. REQUIRED INPUT
+    
+
+    scaling: the scale factor from MASSPRF--look in the output of MASSPRF to find this. 1 or a multiple of 3. REQUIRED INPUT
 
 
-outfile: where the resultant commands for Chimera to color will be stored. Defaults chimeraColoring.txt
+    outfile: where the resultant commands for Chimera to color will be stored. Defaults chimeraColoring.txt
 
-    (hint: execute the following on the Chimera command line): read <outfile>; 
+
+(hint: execute the following on the Chimera command line): read <outfile>; 
     
     
-scaling: the scale factor from MASSPRF--look in the output of MASSPRF to find this. 1 or a multiple of 3. REQUIRED INPUT
 
+doOnly: a vector of rows from the design file to use. Default is use all. (ex. c(1,3,4))
+    
+
+hasHeader: logical. Does your design file contain a header? Defaults FALSE
+    
 
 sigSetting: what are you using to determine significance? only affects scale factor 1; otherwise sitewise significance is used. Defaults average
 
@@ -49,7 +59,8 @@ onlySig: T or F do you want to only color significant sites. Defaults T
 
 rgb1 and rgb2: vectors of size 3, corresponding to a rgb value for coloring the selection intensity. Defaults red and blue
 
-midColor: vector of size 3, optional, corresponding to an rgb value. A midpoint color for a gradient between rgb1 and 2. Defaults none (i.e. 2 color gradient)
+    
+midColor: vector of size 3, optional, corresponding to an rgb value. A midpoint color for a gradient between rgb1 and 2. Defaults NULL (i.e. 2 color gradient)
 
 
 bins: how many equally spaced apart color categories you want to use for your data. Defaults 10
