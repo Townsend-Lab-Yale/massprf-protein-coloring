@@ -14,6 +14,7 @@
 #rgb1 and rgb2: vectors of size 3, corresponding to a rgb value for coloring the selection intensity
 #bins: how many equally spaced apart color categories you want to use for your data
 #ehColor: what do you want to color 'eh' residues (missing data, nonsignificant) as a vector size three of rgb
+#verbose: Do you want more detailed messages printed during run-time? Default F.
 
 
 batchMASSPRF_Chimera <-
@@ -24,17 +25,18 @@ batchMASSPRF_Chimera <-
            onlySig = T,
            rgb1 = c(250, 30, 30),
            rgb2 = c(30, 30, 250),
-           bins = 100,
+           bins = 10,
            ehColor = c(128, 128, 128),
            midColor = NULL,
-           logT = F) {
+           logT = F,
+           verbose=F) {
     require("bio3d")
     require("Biostrings")
     require("muscle")
     if (!sigSetting %in% c("average", "any", "majority", "strict")) {
       stop("sigSetting must be average, any, majority, strict")
     }
-    
+    if(verbose){print("Processing Design File")}
     myDesignFile<-read.csv(file=designFile,sep="\t",header=hasHeader)
     if(!is.null(doOnly)){myDesignFile<-myDesignFile[doOnly,]}
     colnames(myDesignFile)<-c("pdbList","MASSPRF_Nuc_Fasta_List","MASSPRF_Table_List","scalingList","outList")
@@ -56,7 +58,7 @@ batchMASSPRF_Chimera <-
       stop("Input Lists of different length")
     }
     numToDo <- length(mypdbList)
-    
+    if(verbose){print("Design File Looks Good!")}
     for (i in myScalingList) {
       if (i == 1) {
         next()
@@ -66,7 +68,8 @@ batchMASSPRF_Chimera <-
       }
       stop("Scaling must be 1 or a multiple of 3 (check MASSPRF file for details)")
     }
-    
+    if(verbose){print("Scalings are Valid")}
+    if(verbose){print("Discerning RGB Scaling for all Samples")}
     #lets figure out the best scale factor for everything
     redHex <- rgb(rgb1[1], rgb1[2], rgb1[3], maxColorValue = 255)
     blueHex <- rgb(rgb2[1], rgb2[2], rgb2[3], maxColorValue = 255)
@@ -141,6 +144,7 @@ batchMASSPRF_Chimera <-
         colorRampPalette(c(blueHex, midHex, redHex))((numberOfColors - 1))[ii]
     }
     gamma2Color$logColor <- myColors
+    if(verbose){print("RGB Bins for all Data Defined!")}
     
     isSignificant <- function(LCI, UCI) {
       if (is.na(LCI)) {
@@ -157,8 +161,9 @@ batchMASSPRF_Chimera <-
       }
       return(FALSE)
     }
-    
+    if(verbose){print("Begin Processing Individual Proteins")}
     for (fileNum in 1:numToDo) {
+      print(paste0("Processing ",myMASSPRF_Table_List[fileNum]))
       MASSPRF_FILE <- read.csv(myMASSPRF_Table_List[fileNum], sep = "\t")
       structUnaligned <-
         paste0(pdbseq(read.pdb(mypdbList[fileNum])), collapse = "")
@@ -168,8 +173,9 @@ batchMASSPRF_Chimera <-
         )[[1]]))
       tmpAln <- c(">orig", origUnaligned, ">struct", structUnaligned)
       writeLines(tmpAln, con = "_tmpAln.fasta")
+      if(verbose){print("Aligning...")}
       res <- muscle(Biostrings::readAAStringSet("_tmpAln.fasta"))
-      file.remove("_tmpAln.fasta")
+      #file.remove("_tmpAln.fasta")
       res <- as.character(res)
       origSeq <- res[1]
       structSeq <- res[2]
@@ -179,7 +185,7 @@ batchMASSPRF_Chimera <-
       tmpMASS <-
         MASSPRF_FILE[, c("Position", "Gamma", "Lower_CI_Gamma", "Upper_CI_Gamma")]
       colnames(tmpMASS) <- c("Position", "Gamma", "LCI", "UCI")
-      
+      if(verbose){print("Determining Coloring...")}
       for (it in 1:nrow(tmpMASS)) {
         if (is.logical(logT)) {
           tmpMASS[it, "color"] <-
@@ -189,8 +195,7 @@ batchMASSPRF_Chimera <-
             gamma2Color[which(gamma2Color$gamma == tmpMASS$Gamma[it]), "logColor"]
         }
       }
-      
-      
+
       Raw <- data.frame(matrix(nrow = nchar(origUnaligned), ncol = 6))
       colnames(Raw) <- c("AA", "Gamma", "LCI", "UCI", "color", "Significant")
       Raw$AA <- unlist(strsplit(x = origUnaligned, split = ""))
@@ -258,7 +263,7 @@ batchMASSPRF_Chimera <-
         }
       } else{
         if (scaling %% 3 != 0) {
-          stop("needs to be divisible by 3!!!!")
+          stop("Non 1 scaling needs to be divisible by 3!!!!")
         }
         aaScale <- scaling / 3
         while (i < nrow(tmpMASS)) {
@@ -267,7 +272,9 @@ batchMASSPRF_Chimera <-
           thisL <- tmpMASS$LCI[i]
           thisU <- tmpMASS$UCI[i]
           thisSig <- isSignificant(thisL, thisU)
+          
           relevantIndecies <- ((((i * aaScale) - (aaScale - 1))):(i * aaScale))
+          if(max(relevantIndecies)>length(Raw$Gamma)){i<-i+1;next()} #if sizes don't match because terminal gap!
           Raw$Gamma[relevantIndecies] <- thisG
           Raw$color[relevantIndecies] <- thisC
           Raw$LCI[relevantIndecies] <- thisL
@@ -313,11 +320,12 @@ batchMASSPRF_Chimera <-
         myString <- gsub("POS", POS, myString)
         return(myString)
       }
-      
+      if(verbose){print("Begin Constructing Chimera Script")}
+      if(verbose){print("Defining all Colors")}
       holdAllCommands <- ""
       uniqueColors<-unique(fStruct$color)
       for(i in 1:length(uniqueColors)){
-        holdAllCommands<-c(holdAllCommands,paste0("colordef Custom",i," ",uniqueColors[i]))
+        holdAllCommands<-c(holdAllCommands,paste0("colordef Custom",i," ",uniqueColors[i],";"))
       }
       
       fStruct$colorName<-""
@@ -330,6 +338,7 @@ batchMASSPRF_Chimera <-
         #tmp <- setmyColor(myHex, paste0("Custom", (myHexPos)), myPOS)
         #holdAllCommands <- c(holdAllCommands, tmp)
       }
+      if(verbose){print("Assigning colors and Optimizing Chimera script...")}
       mcInd<-1
       comTemp<-"color COLORNAME #0:POS1-POS2;"
       lastCol<-fStruct$colorName[mcInd]
@@ -341,6 +350,8 @@ batchMASSPRF_Chimera <-
           ctmp<-gsub("COLORNAME",lastCol,comTemp)
           ctmp<-gsub("POS1",as.character(spos),ctmp)
           ctmp<-gsub("POS2",as.character(mcInd-1),ctmp)
+          #ctmp<-gsub("POS1",as.character(spos-1),ctmp) #convert to python indexing
+          #ctmp<-gsub("POS2",as.character(mcInd-2),ctmp)
           holdAllCommands<-c(holdAllCommands,ctmp)
           spos<-mcInd
           lastCol<-currCol
@@ -350,10 +361,14 @@ batchMASSPRF_Chimera <-
       ctmp<-gsub("COLORNAME",lastCol,comTemp)
       ctmp<-gsub("POS1",as.character(spos),ctmp)
       ctmp<-gsub("POS2",as.character(mcInd-1),ctmp)
+      #ctmp<-gsub("POS1",as.character(spos-1),ctmp) #convert to python indexing
+      #ctmp<-gsub("POS2",as.character(mcInd-2),ctmp)
       holdAllCommands<-c(holdAllCommands,ctmp)
       
       holdAllCommands <- holdAllCommands[nchar(holdAllCommands) > 1]
+      holdAllCommands<-c(paste0("color ",ehHex,";"),holdAllCommands)
       writeLines(holdAllCommands, con = myOutList[fileNum])
     }
+    if(verbose){print("Done!")}
   }
 
