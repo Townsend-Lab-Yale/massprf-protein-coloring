@@ -12,9 +12,8 @@
 #sigSetting: what are you using to determine significance? only affects scale factor 1; otherwise sitewise significance is used
 #onlySig: T or F do you want to only color significant sites
 #rgb1 and rgb2: vectors of size 3, corresponding to a rgb value for coloring the selection intensity
-#bins: how many equally spaced apart color categories you want to use for your data
+#bins: how many equally spaced apart color categories you want to use for your data. Defaults 510, rbg precision limit for 2 cols
 #ehColor: what do you want to color 'eh' residues (missing data, nonsignificant) as a vector size three of rgb
-#verbose: Do you want more detailed messages printed during run-time? Default F.
 
 
 batchMASSPRF_Chimera <-
@@ -25,7 +24,7 @@ batchMASSPRF_Chimera <-
            onlySig = T,
            rgb1 = c(250, 30, 30),
            rgb2 = c(30, 30, 250),
-           bins = 10,
+           bins = 510,
            ehColor = c(128, 128, 128),
            midColor = NULL,
            logT = F,
@@ -99,10 +98,13 @@ batchMASSPRF_Chimera <-
     colnames(gamma2Color) <- c("gamma", "logGamma", "color", "logColor")
     gamma2Color$gamma <- allGammas
     if (!is.logical(logT)) {
+      
       isNegative<-(which(allGammas<0))
       gamma2Color$logGamma <-
-        log(abs(allGammas), base = logT)
-      gamma2Color$logGamma[isNegative]<-gamma2Color$logGamma[isNegative]*(-1)
+        log((abs(allGammas)+1), base = logT)
+      gamma2Color$logGamma[isNegative]<-(gamma2Color$logGamma[isNegative]*(-1))
+      
+      
     } else{
       gamma2Color$logGamma <- allGammas
     }
@@ -144,6 +146,11 @@ batchMASSPRF_Chimera <-
         colorRampPalette(c(blueHex, midHex, redHex))((numberOfColors - 1))[ii]
     }
     gamma2Color$logColor <- myColors
+    
+
+    if(verbose){plot(1:length(gamma2Color$logColor),gamma2Color$logGamma,col=gamma2Color$logColor)}
+
+    
     if(verbose){print("RGB Bins for all Data Defined!")}
     
     isSignificant <- function(LCI, UCI) {
